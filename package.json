@@ -1,0 +1,48 @@
+{
+  "name": "sequence-game",
+  "version": "1.0.0",
+  "description": "Sequence for Kids Game - online",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand --detectOpenHandles --testPathPattern=\".test.js$\" --testRegex"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://mitrousis@github.com/mitrousis/Sequence-Game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mitrousis/Sequence-Game/issues"
+  },
+  "homepage": "https://github.com/mitrousis/Sequence-Game#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "uuid": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "jest": "^25.1.0",
+    "standard": "^14.3.3"
+  },
+  "jest": {
+    "transform": {},
+    "testEnvironment": "node",
+    "verbose": true,
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
+  "standard": {
+    "globals": [],
+    "env": {
+      "node": true,
+      "jest": true
+    },
+    "ignore": [
+      "/build",
+      "/node_modules"
+    ]
+  }
+}
