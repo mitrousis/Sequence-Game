@@ -121,4 +121,24 @@ describe('SequenceGame', () => {
       expect(game._checkBoardSpace(state, 0, 4, 'playerid')).toEqual(5)
     })
   })
+
+  describe('#_checkForWinningPlayer()', () => {
+    test('Player1 should win', () => {
+      const game = new SequenceGame()
+
+      const playerOneId = game.addPlayer()
+      const playerTwoId = game.addPlayer()
+      const state = game._getEmptyBoardState(10, 10)
+
+      state.row[1].column[1] = playerOneId
+      state.row[2].column[1] = playerOneId
+      state.row[3].column[1] = playerOneId
+      state.row[4].column[1] = playerOneId
+
+      state.row[4].column[3] = playerTwoId
+      state.row[5].column[3] = playerTwoId
+
+      expect(game._checkForWinningPlayer(state, 4)).toEqual(playerOneId)
+    })
+  })
 })

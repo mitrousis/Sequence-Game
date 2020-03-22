@@ -42,21 +42,45 @@ class SequenceGame extends EventListener {
     this._boardState.row[row].column[column] = playerId
   }
 
-  _checkWinningBoardState (boardState) {
-    for (let row = 0; row < this._rows; row++) {
-      for (let column = 0; column < this._columns; column++) {
-        const foundValidSequence = this._checkBoardSpace(boardState, row, column, this.currentPlayer)
-        if (foundValidSequence) {
-          console.log(this.currentPlayer, 'wins')
+  /**
+   * Checks board for any players that have won
+   * @param {object} boardState
+   * @returns {string} winning playerId
+   */
+  _checkForWinningPlayer (boardState, winningSequentialMatches = this._winningSequentialMatches) {
+    const lastRow = boardState.row.length - 1
+    const lastColumn = boardState.row[lastRow].column.length - 1
+
+    for (let row = 0; row <= lastRow; row++) {
+      for (let column = 0; column <= lastColumn; column++) {
+        // Check all players, first one that it finds with matching sequence wins
+        for (const playerId of this._playerIds) {
+          const sequentialMatches = this._checkBoardSpace(boardState, row, column, playerId)
+          if (sequentialMatches === winningSequentialMatches) {
+            return playerId
+          }
         }
       }
     }
+
+    return null
   }
 
-  // _checkBoardSpace (boardState, row, column, playerId, direction, iteration = 0) {
-
-  // }
-
+  /**
+   * Checks a given board space and returns the number of
+   * sequential connected spaces in all 6 directions.
+   * ex: return value of 0 = no matching space
+   * ex: return value of 1 = 1 matching space
+   * ex: return value of 4 = 4 sequential matching spaces, including the one being tested
+   * Note this doesn't return the full sequence if the check space isn't at the beginning or end of sequence
+   * @param {object} boardState
+   * @param {number} homeRow
+   * @param {number} homeColumn
+   * @param {string} playerId
+   * @param {string} direction
+   * @param {number} iteration
+   * @returns {number} number of sequential matching spaces
+   */
   _checkBoardSpace (boardState, homeRow, homeColumn, playerId, direction = null, iteration = 0) {
     let isValidMatch = false
     // Ensure this is a valid spot within board bounds
@@ -86,71 +110,12 @@ class SequenceGame extends EventListener {
           if (iteration !== 0) return sequentialIterations
 
           maxSequentialIterations = Math.max(maxSequentialIterations, sequentialIterations)
-          // if (sequentialMatches === maxIterations) return true
         }
       }
     }
 
     // Found nothing
     return maxSequentialIterations
-
-    //   // Don't check yo'self
-    //   if (checkRow !== homeRow && checkColumn !== homeColumn) {
-    //     // Found a valid spot
-    //     if (this._isFreeSpace(checkRow, checkColumn) || boardState.row[checkRow].column[checkColumn] === playerId) {
-    //       isValidMatch = true
-    //     }
-    //   }
-    // }
-
-    //  if(boardState.row[homeRow] && boardState.row[homeColumn].column[checkColumn]) {
-
-    //       let isValidMatch = false
-
-    //       // Ensure this is a valid spot
-    //       if (boardState.row[checkRow] && boardState.row[checkRow].column[checkColumn]) {
-    //         // Don't check yo'self
-    //         if (checkRow !== homeRow && checkColumn !== homeColumn) {
-    //           // Found a valid spot
-    //           if (this._isFreeSpace(checkRow, checkColumn) || boardState.row[checkRow].column[checkColumn] === playerId) {
-    //             isValidMatch = true
-    //           }
-    //         }
-    //       }
-
-    //       let foundNeighbors = 0
-
-    //       if (isValidMatch) {
-    //         const checkDirection = direction || `${rowOffset},${columnOffset}`
-    //         foundNeighbors = this._checkBoardNeighbors(boardState, checkRow, checkColumn, playerId, checkDirection, iteration + 1)
-
-    //         if(foundNeighbors === 4) !!!
-    //       } else if (iteration !== 0) {
-    //         return iteration
-    //       } else {
-
-    //       }
-
-    // // If headed in a direction, recursively keep going
-    // if (direction) {
-    //   if (isValidMatch) {
-    //     // const startDirection =
-    //     return this._checkBoardNeighbors(boardState, checkRow, checkColumn, playerId, direction, iteration + 1)
-    //   } else {
-    //     return iteration
-    //   }
-    // } else {
-    //   this._checkBoardNeighbors(boardState, rowOffset, columnOffset, playerId, direction, count + 1)
-    // }
-
-    // matchedNeighbors.push({
-    //   row: rowOffset,
-    //   column: columnOffset
-    // })
-    //   }
-    // }
-
-    // return matchedNeighbors
   }
 
   _isFreeSpace (boardState, row, column) {
