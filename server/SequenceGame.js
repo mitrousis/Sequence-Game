@@ -10,6 +10,7 @@ class SequenceGame extends EventListener {
     this._playerIds = []
     this._boardState = {}
     this._playerTurnIndex = -1
+    this._winningSequentialMatches = 4
   }
 
   newRound () {
@@ -28,7 +29,7 @@ class SequenceGame extends EventListener {
 
     let isValidMove = true
     // Can't place on corners
-    if (this._isFreeSpace(row, column)) isValidMove = false
+    if (this._isFreeSpace(this._boardState, row, column)) isValidMove = false
 
     // Can't place on existing square
     if (this._boardState.row[row].column[column] !== null) {
@@ -42,45 +43,122 @@ class SequenceGame extends EventListener {
   }
 
   _checkWinningBoardState (boardState) {
-
+    for (let row = 0; row < this._rows; row++) {
+      for (let column = 0; column < this._columns; column++) {
+        const foundValidSequence = this._checkBoardSpace(boardState, row, column, this.currentPlayer)
+        if (foundValidSequence) {
+          console.log(this.currentPlayer, 'wins')
+        }
+      }
+    }
   }
 
-  // Left off here - need to make this recursive
-  _checkBoardNeighbors (boardState, homeRow, homeColumn, playerId, count = 0) {
-    const matchedNeighbors = []
+  // _checkBoardSpace (boardState, row, column, playerId, direction, iteration = 0) {
 
-    for (let row = homeRow - 1; row <= homeRow + 1; row++) {
-      for (let column = homeColumn - 1; column <= homeColumn + 1; column++) {
-        // Ensure this is a valid spot
-        if (boardState.row[row] && boardState.row[row].column[column]) {
-          // Don't check yourself
-          if (row !== homeRow && column !== homeColumn) {
-            if (this._isFreeSpace(row, column) || boardState.row[row].column[column] === playerId) {
-              matchedNeighbors.push({
-                row,
-                column
-              })
-            }
-          }
+  // }
+
+  _checkBoardSpace (boardState, homeRow, homeColumn, playerId, direction = null, iteration = 0) {
+    let isValidMatch = false
+    // Ensure this is a valid spot within board bounds
+    if (boardState.row[homeRow] !== undefined && boardState.row[homeRow].column[homeColumn] !== undefined) {
+      if (this._isFreeSpace(boardState, homeRow, homeColumn) || boardState.row[homeRow].column[homeColumn] === playerId) {
+        isValidMatch = true
+      }
+    }
+
+    if (isValidMatch === false) return iteration
+
+    const rowStartDir = direction ? parseInt(direction.split(',')[0]) : -1
+    const columnStartDir = direction ? parseInt(direction.split(',')[1]) : -1
+
+    let maxSequentialIterations = 1
+    // If valid space, check for neighbors
+    for (let rowOffset = rowStartDir; rowOffset <= 1; rowOffset++) {
+      for (let columnOffset = columnStartDir; columnOffset <= 1; columnOffset++) {
+        // Skip checking this same space
+        if (!(rowOffset === 0 && columnOffset === 0)) {
+          // Actual row, column to check (includes the offset)
+          const checkRow = homeRow + rowOffset
+          const checkColumn = homeColumn + columnOffset
+
+          const checkDirection = direction || `${rowOffset},${columnOffset}`
+          const sequentialIterations = this._checkBoardSpace(boardState, checkRow, checkColumn, playerId, checkDirection, iteration + 1)
+          if (iteration !== 0) return sequentialIterations
+
+          maxSequentialIterations = Math.max(maxSequentialIterations, sequentialIterations)
+          // if (sequentialMatches === maxIterations) return true
         }
       }
     }
 
-    return matchedNeighbors
+    // Found nothing
+    return maxSequentialIterations
+
+    //   // Don't check yo'self
+    //   if (checkRow !== homeRow && checkColumn !== homeColumn) {
+    //     // Found a valid spot
+    //     if (this._isFreeSpace(checkRow, checkColumn) || boardState.row[checkRow].column[checkColumn] === playerId) {
+    //       isValidMatch = true
+    //     }
+    //   }
+    // }
+
+    //  if(boardState.row[homeRow] && boardState.row[homeColumn].column[checkColumn]) {
+
+    //       let isValidMatch = false
+
+    //       // Ensure this is a valid spot
+    //       if (boardState.row[checkRow] && boardState.row[checkRow].column[checkColumn]) {
+    //         // Don't check yo'self
+    //         if (checkRow !== homeRow && checkColumn !== homeColumn) {
+    //           // Found a valid spot
+    //           if (this._isFreeSpace(checkRow, checkColumn) || boardState.row[checkRow].column[checkColumn] === playerId) {
+    //             isValidMatch = true
+    //           }
+    //         }
+    //       }
+
+    //       let foundNeighbors = 0
+
+    //       if (isValidMatch) {
+    //         const checkDirection = direction || `${rowOffset},${columnOffset}`
+    //         foundNeighbors = this._checkBoardNeighbors(boardState, checkRow, checkColumn, playerId, checkDirection, iteration + 1)
+
+    //         if(foundNeighbors === 4) !!!
+    //       } else if (iteration !== 0) {
+    //         return iteration
+    //       } else {
+
+    //       }
+
+    // // If headed in a direction, recursively keep going
+    // if (direction) {
+    //   if (isValidMatch) {
+    //     // const startDirection =
+    //     return this._checkBoardNeighbors(boardState, checkRow, checkColumn, playerId, direction, iteration + 1)
+    //   } else {
+    //     return iteration
+    //   }
+    // } else {
+    //   this._checkBoardNeighbors(boardState, rowOffset, columnOffset, playerId, direction, count + 1)
+    // }
+
+    // matchedNeighbors.push({
+    //   row: rowOffset,
+    //   column: columnOffset
+    // })
+    //   }
+    // }
+
+    // return matchedNeighbors
   }
 
-  _isFreeSpace (row, column) {
-    if (row === 0) {
-      if (column === 0 || column === this._columns - 1) {
-        return true
-      }
-    } else if (row === this._rows - 1) {
-      if (column === 0 || column === this._columns - 1) {
-        return true
-      }
-    }
+  _isFreeSpace (boardState, row, column) {
+    const lastRow = boardState.row.length - 1
+    const lastColumn = boardState.row[lastRow].column.length - 1
 
-    return false
+    return (column === 0 || column === lastColumn) &&
+      (row === 0 || row === lastRow)
   }
 
   _getEmptyBoardState (rows, columns) {
