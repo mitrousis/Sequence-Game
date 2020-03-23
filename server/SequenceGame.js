@@ -1,5 +1,8 @@
 const EventListener = require('events')
-const { v4: uuidv4 } = require('uuid')
+
+/**
+ * @typedef {import('./Player.js')} Player
+ */
 
 class SequenceGame extends EventListener {
   constructor () {
@@ -7,7 +10,7 @@ class SequenceGame extends EventListener {
 
     this._rows = 7
     this._columns = 6
-    this._playerIds = []
+    this._players = []
     this._boardState = {}
     this._playerTurnIndex = -1
     this._winningSequentialMatches = 4
@@ -18,12 +21,18 @@ class SequenceGame extends EventListener {
 
     // Assume player turn goes round-robin
     this._playerTurnIndex++
-    this._playerTurnIndex %= this._playerIds.length
+    this._playerTurnIndex %= this._players.length
   }
 
-  updateBoard (row, column, playerId) {
-    const expectedPlayerId = this._playerIds[this._playerTurnIndex]
-    if (playerId !== expectedPlayerId) {
+  /**
+   *
+   * @param {number} row
+   * @param {number} column
+   * @param {Player} player
+   */
+
+  playBoardSpace (row, column, player) {
+    if (this.currentPlayer !== player) {
       throw Error('Invalid player for turn')
     }
 
@@ -38,8 +47,9 @@ class SequenceGame extends EventListener {
 
     if (!isValidMove) throw Error('Invalid move')
 
-    // Put the playerId in that spot
-    this._boardState.row[row].column[column] = playerId
+    // Put the playerId in that spot. This makes it easier
+    // to compare and serialize the data for sending
+    this._boardState.row[row].column[column] = player.id
   }
 
   /**
@@ -54,7 +64,8 @@ class SequenceGame extends EventListener {
     for (let row = 0; row <= lastRow; row++) {
       for (let column = 0; column <= lastColumn; column++) {
         // Check all players, first one that it finds with matching sequence wins
-        for (const playerId of this._playerIds) {
+        for (const player of this._players) {
+          const playerId = player.id
           const sequentialMatches = this._checkBoardSpace(boardState, row, column, playerId)
           if (sequentialMatches === winningSequentialMatches) {
             return playerId
@@ -140,33 +151,18 @@ class SequenceGame extends EventListener {
   }
 
   /**
-   * @returns {string} unique playerId
+   * @param {Player} player
    */
-  addPlayer () {
-    const playerId = uuidv4()
-    this._playerIds.push(playerId)
-    return playerId
+  addPlayer (player) {
+    this._players.push(player)
   }
 
+  /**
+   * @returns {Player}
+   */
   get currentPlayer () {
-    return this._playerIds[this._playerTurnIndex]
+    return this._players[this._playerTurnIndex]
   }
-
-  // _shuffleDeck () {
-
-  // }
-
-  // /**
-  //  *
-  //  * @param {number} index
-  //  * @returns {object} row, column
-  //  */
-  // _getRowColumnForIndex (index) {
-  //   return {
-  //     row: index % this._rows,
-  //     column: Math.floor(index / this._columns)
-  //   }
-  // }
 }
 
 module.exports = SequenceGame

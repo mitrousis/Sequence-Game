@@ -1,41 +1,42 @@
 const SequenceGame = require('../server/SequenceGame')
+const Player = require('../server/Player')
 
 describe('SequenceGame', () => {
   test('#NewRound() should initialize expected board and players', () => {
     const game = new SequenceGame()
 
-    game.addPlayer()
+    game.addPlayer(new Player())
     game.newRound()
 
     expect(game._boardState.row[0].column[game._columns - 1]).toEqual(null)
     expect(game._boardState.row[game._rows - 1].column[0]).toEqual(null)
-    expect(game._playerIds).toHaveLength(1)
+    expect(game._players).toHaveLength(1)
   })
 
-  test('#updateBoard() verify errors', () => {
+  test('#playBoardSpace() verify errors', () => {
     const game = new SequenceGame()
 
-    game.addPlayer()
+    game.addPlayer(new Player())
     game.newRound()
 
     expect(() => {
-      game.updateBoard(0, 0, game.currentPlayer)
+      game.playBoardSpace(0, 0, game.currentPlayer)
     }).toThrowError('Invalid move')
 
     expect(() => {
-      game.updateBoard(0, game._columns - 1, game.currentPlayer)
+      game.playBoardSpace(0, game._columns - 1, game.currentPlayer)
     }).toThrowError('Invalid move')
 
     expect(() => {
-      game.updateBoard(game._rows - 1, 0, game.currentPlayer)
+      game.playBoardSpace(game._rows - 1, 0, game.currentPlayer)
     }).toThrowError('Invalid move')
 
     expect(() => {
-      game.updateBoard(game._rows - 1, game._columns - 1, game.currentPlayer)
+      game.playBoardSpace(game._rows - 1, game._columns - 1, game.currentPlayer)
     }).toThrowError('Invalid move')
 
     expect(() => {
-      game.updateBoard(1, 1, 'invalidplayerid')
+      game.playBoardSpace(1, 1, 'invalidplayerid')
     }).toThrowError('Invalid player for turn')
   })
 
@@ -126,19 +127,23 @@ describe('SequenceGame', () => {
     test('Player1 should win', () => {
       const game = new SequenceGame()
 
-      const playerOneId = game.addPlayer()
-      const playerTwoId = game.addPlayer()
+      const playerOne = new Player()
+      game.addPlayer(playerOne)
+
+      const playerTwo = new Player()
+      game.addPlayer(playerTwo)
+
       const state = game._getEmptyBoardState(10, 10)
 
-      state.row[1].column[1] = playerOneId
-      state.row[2].column[1] = playerOneId
-      state.row[3].column[1] = playerOneId
-      state.row[4].column[1] = playerOneId
+      state.row[1].column[1] = playerOne.id
+      state.row[2].column[1] = playerOne.id
+      state.row[3].column[1] = playerOne.id
+      state.row[4].column[1] = playerOne.id
 
-      state.row[4].column[3] = playerTwoId
-      state.row[5].column[3] = playerTwoId
+      state.row[4].column[3] = playerTwo.id
+      state.row[5].column[3] = playerTwo.id
 
-      expect(game._checkForWinningPlayer(state, 4)).toEqual(playerOneId)
+      expect(game._checkForWinningPlayer(state, 4)).toEqual(playerOne.id)
     })
   })
 })
