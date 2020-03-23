@@ -1,5 +1,5 @@
-const SequenceGame = require('../server/SequenceGame')
-const Player = require('../server/Player')
+const SequenceGame = require('../server/game/SequenceGame')
+const Player = require('../server/game/Player')
 
 describe('SequenceGame', () => {
   test('#NewRound() should initialize expected board and players', () => {

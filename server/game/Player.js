@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid')
 class Player {
   constructor () {
     this._id = uuidv4()
+    this._currentHand = []
   }
 
   /**

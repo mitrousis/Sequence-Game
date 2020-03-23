@@ -1,27 +1,42 @@
-const EventListener = require('events')
-
+const Game = require('./Game')
+const SequenceDeck = require('./SequenceDeck')
 /**
- * @typedef {import('./Player.js')} Player
+ * @typedef {import('./Player')} Player
  */
 
-class SequenceGame extends EventListener {
+class SequenceGame extends Game {
   constructor () {
     super()
 
+    // Game parameters
     this._rows = 7
     this._columns = 6
+    this._minPlayerCount = 2
+    this._maxPlayerCount = 4
+    this._winningSequentialMatches = 4
+
+    // Internal
     this._players = []
     this._boardState = {}
     this._playerTurnIndex = -1
-    this._winningSequentialMatches = 4
+    this._deck = new SequenceDeck()
   }
 
   newRound () {
+    if (this._players.length < this._minPlayerCount) {
+      throw Error('Not enough players to start game')
+    }
+
     this._boardState = this._getEmptyBoardState(this._rows, this._columns)
 
     // Assume player turn goes round-robin
     this._playerTurnIndex++
     this._playerTurnIndex %= this._players.length
+
+    this._deck.reset()
+    this._deck.shuffle()
+
+    // TODO: deal the cards
   }
 
   /**
@@ -154,11 +169,15 @@ class SequenceGame extends EventListener {
    * @param {Player} player
    */
   addPlayer (player) {
+    if (this._players.length === this._maxPlayerCount) {
+      throw Error(`Game cannot exceed ${this._maxPlayerCount} players`)
+    }
+
     this._players.push(player)
   }
 
   /**
-   * @returns {Player}
+   * @returns {Player} current player
    */
   get currentPlayer () {
     return this._players[this._playerTurnIndex]
