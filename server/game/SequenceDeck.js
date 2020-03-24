@@ -6,8 +6,7 @@ class SequenceDeck extends Deck {
   }
 }
 
-// TODO: make these cards an object
-const sequenceCards = [
+let sequenceCards = [
   {
     name: 'Larry the Lion',
     type: 'default'
@@ -18,6 +17,7 @@ const sequenceCards = [
   }
 ]
 
-sequenceCards = sequenceCards.concat(sequenceCards)
+// Quick and dirty deep doubling
+sequenceCards = sequenceCards.concat(JSON.parse(JSON.stringify(sequenceCards)))
 
 module.exports = SequenceDeck

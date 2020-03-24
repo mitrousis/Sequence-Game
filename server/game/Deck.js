@@ -9,7 +9,7 @@ class Deck {
    * @param {array} cardValues
    */
   constructor (cardValues) {
-    this._cardValues = {}
+    this._masterCardDeck = []
     /** @type {Array} */
     this._currentDeck = []
     /** @type {Array} */
@@ -26,11 +26,14 @@ class Deck {
 
   addCard (cardValue) {
     // Create unique id for the card
-    this._cardValues[uuidv4()] = cardValue
+    this._masterCardDeck.push({
+      id: uuidv4(),
+      ...cardValue
+    })
   }
 
   getCardById (cardId) {
-    return this._cardValues[cardId]
+    return this._masterCardDeck.filter((card) => card.id === cardId)
   }
 
   /**
@@ -40,9 +43,11 @@ class Deck {
     this._currentDeck = []
     this._discards = []
 
-    for (const cardId in this._cardValues) {
-      this._currentDeck.push(cardId)
-    }
+    // Might need to break the reference here at some point
+    this._currentDeck = this._masterCardDeck.slice()
+    // for (const cardId in this._cardValues) {
+    //   this._currentDeck.push(cardId)
+    // }
   }
 
   shuffle () {

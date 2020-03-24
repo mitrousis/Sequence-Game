@@ -1,12 +1,11 @@
 const SequenceGame = require('../server/game/SequenceGame')
-const Player = require('../server/game/Player')
 
 describe('SequenceGame', () => {
-  test('#NewRound() should initialize expected board and players', () => {
+  test('#startRound() should initialize expected board and players', () => {
     const game = new SequenceGame()
 
-    game.addPlayer(new Player())
-    game.newRound()
+    game.addPlayer()
+    game.startRound()
 
     expect(game._boardState.row[0].column[game._columns - 1]).toEqual(null)
     expect(game._boardState.row[game._rows - 1].column[0]).toEqual(null)
@@ -16,8 +15,8 @@ describe('SequenceGame', () => {
   test('#playBoardSpace() verify errors', () => {
     const game = new SequenceGame()
 
-    game.addPlayer(new Player())
-    game.newRound()
+    game.addPlayer()
+    game.startRound()
 
     expect(() => {
       game.playBoardSpace(0, 0, game.currentPlayer)
@@ -127,11 +126,8 @@ describe('SequenceGame', () => {
     test('Player1 should win', () => {
       const game = new SequenceGame()
 
-      const playerOne = new Player()
-      game.addPlayer(playerOne)
-
-      const playerTwo = new Player()
-      game.addPlayer(playerTwo)
+      const playerOne = game.addPlayer()
+      const playerTwo = game.addPlayer()
 
       const state = game._getEmptyBoardState(10, 10)
 

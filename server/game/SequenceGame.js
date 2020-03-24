@@ -1,5 +1,6 @@
 const Game = require('./Game')
 const SequenceDeck = require('./SequenceDeck')
+
 /**
  * @typedef {import('./Player')} Player
  */
@@ -8,35 +9,35 @@ class SequenceGame extends Game {
   constructor () {
     super()
 
+    this.gameType = 'sequence'
+
     // Game parameters
     this._rows = 7
     this._columns = 6
     this._minPlayerCount = 2
     this._maxPlayerCount = 4
     this._winningSequentialMatches = 4
+    this._startingCardCount = 3
 
     // Internal
-    this._players = []
     this._boardState = {}
-    this._playerTurnIndex = -1
     this._deck = new SequenceDeck()
   }
 
-  newRound () {
-    if (this._players.length < this._minPlayerCount) {
-      throw Error('Not enough players to start game')
-    }
+  startRound () {
+    super.startRound()
 
     this._boardState = this._getEmptyBoardState(this._rows, this._columns)
-
-    // Assume player turn goes round-robin
-    this._playerTurnIndex++
-    this._playerTurnIndex %= this._players.length
 
     this._deck.reset()
     this._deck.shuffle()
 
-    // TODO: deal the cards
+    // Deal to all players
+    this._players.forEach((player) => {
+      player.addCardsToHand(this._deck.deal(this._startingCardCount))
+    })
+
+    // At this point the game has started
   }
 
   /**
@@ -165,23 +166,9 @@ class SequenceGame extends Game {
     return emptyBoard
   }
 
-  /**
-   * @param {Player} player
-   */
-  addPlayer (player) {
-    if (this._players.length === this._maxPlayerCount) {
-      throw Error(`Game cannot exceed ${this._maxPlayerCount} players`)
-    }
-
-    this._players.push(player)
-  }
-
-  /**
-   * @returns {Player} current player
-   */
-  get currentPlayer () {
-    return this._players[this._playerTurnIndex]
-  }
+  // addPlayer () {
+  //   return super.addPlayer()
+  // }
 }
 
 module.exports = SequenceGame
