@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Jest All",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--runInBand", "--detectOpenHandles", "--testPathPattern=\".test.js$\"", "--testRegex=SequenceGame"],
+      "args": ["--runInBand", "--detectOpenHandles", "--testPathPattern=\".test.js$\"", "--testRegex=SequenceBoard"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,

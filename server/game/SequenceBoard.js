@@ -17,11 +17,11 @@ class SequenceBoard extends Board {
 
   reset () {
     const emptyBoard = {
-      row: Array(this._rows).fill(null)
+      row: Array(this._rows).fill('empty')
     }
 
     for (const r in emptyBoard.row) {
-      emptyBoard.row[r] = { column: Array(this._columns).fill(null) }
+      emptyBoard.row[r] = { column: Array(this._columns).fill('empty') }
     }
 
     this._boardState = emptyBoard
@@ -113,7 +113,6 @@ class SequenceBoard extends Board {
    * @returns {Number} number of sequential matching spaces
    */
   _checkBoardSpace (boardState, homeRow, homeColumn, playerId, direction = null, iteration = 0) {
-    // Didn't find a valid space
     const spaceValue = this._getBoardSpace(boardState, homeRow, homeColumn)
     if (!(spaceValue === 'free-space' || spaceValue === playerId)) {
       return iteration
@@ -162,7 +161,7 @@ class SequenceBoard extends Board {
     } else if ((column === 0 || column === lastColumn) && (row === 0 || row === lastRow)) {
       return 'free-space'
     } else {
-      return boardState.row[row].column[column] || 'empty'
+      return boardState.row[row].column[column]
     }
   }
 }
