@@ -39,4 +39,8 @@ describe('Sequence Game end-to-end', () => {
     // Quick check to ensure a proper card was populated
     expect(playerOne.currentHand[0]).toHaveProperty('id')
   })
+
+  test('Start next round', () => {
+    game.playBoardSpace()
+  })
 })

@@ -8,7 +8,7 @@ class Player {
 
   /**
    *
-   * @param {array} cards
+   * @param {Array} cards
    */
   addCardsToHand (cards) {
     this._currentHand = this._currentHand.concat(cards)
@@ -22,7 +22,7 @@ class Player {
   }
 
   /**
-   * @returns {string} unique player id
+   * @returns {String} unique player id
    */
   get id () {
     return this._id

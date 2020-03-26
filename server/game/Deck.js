@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid')
 class Deck {
   /**
    * Can be initialized with card values
-   * @param {array} cardValues
+   * @param {Array} cardValues
    */
   constructor (cardValues) {
     this._masterCardDeck = []
@@ -70,7 +70,7 @@ class Deck {
 
   /**
    * Deals a number of cards. Will collect the discards and reshuffle
-   * @param {number} count
+   * @param {Number} count
    * @param {boolean} reshuffleIfNeeded
    */
   deal (count, reshuffleIfNeeded = true) {

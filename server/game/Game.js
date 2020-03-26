@@ -61,7 +61,7 @@ class Game extends EventListener {
 
   /**
    * Reference the player id
-   * @param {string} playerId
+   * @param {String} playerId
    */
   removePlayerById (playerId) {
     this._players.forEach((player, index) => {
@@ -79,7 +79,7 @@ class Game extends EventListener {
   }
 
   /**
-   * @returns {string} unique game id
+   * @returns {String} unique game id
    */
   get id () {
     return this._id

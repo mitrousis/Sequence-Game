@@ -14,7 +14,7 @@ class GameManager extends EventListener {
 
   /**
    * Does what it says
-   * @param {string} gameType supported game type
+   * @param {String} gameType supported game type
    */
   startNewGame (gameType) {
     let newGameInstance
@@ -36,7 +36,7 @@ class GameManager extends EventListener {
 
   /**
    *
-   * @param {string} gameId
+   * @param {String} gameId
    * @returns {Game} game instance
    */
   getGameById (gameId) {
