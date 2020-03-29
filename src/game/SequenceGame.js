@@ -1,6 +1,8 @@
 const Game = require('./Game')
 const SequenceDeck = require('./SequenceDeck')
 const SequenceBoard = require('./SequenceBoard')
+const SequencePlayer = require('./SequencePlayer')
+
 /**
  * @typedef {import('./Player')} Player
  */
@@ -54,6 +56,10 @@ class SequenceGame extends Game {
     // Unicorn = any space
 
     this._board.playSpace(row, column, player, card)
+  }
+
+  addPlayer () {
+    return super.addPlayer(SequencePlayer)
   }
 }
 

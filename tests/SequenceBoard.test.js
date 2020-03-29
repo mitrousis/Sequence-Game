@@ -1,8 +1,36 @@
-const SequenceBoard = require('../server/game/SequenceBoard')
+const SequenceBoard = require('../src/game/SequenceBoard')
 
 describe('SequenceBoard', () => {
+  test.only('#_populateBoardLayout()', () => {
+    const board = new SequenceBoard()
+
+    expect(
+      board._populateBoardLayout(
+        [
+          [1, 2, 3, 4],
+          [5, 6, 7, 8],
+          [9, 10, 11, 12]
+        ]
+      )
+    )
+      .toMatchObject(
+        {
+          row: [
+            {
+              column: [1, 2, 3, 4]
+            },
+            {
+              column: [5, 6, 7, 8]
+            },
+            {
+              column: [9, 10, 11, 12]
+            }
+          ]
+        }
+      )
+  })
+
   test('#playBoardSpace() verify errors', () => {
-    0
     const board = new SequenceBoard()
     const playerId = 'playerId'
     board._boardState.row[0].column[1] = playerId

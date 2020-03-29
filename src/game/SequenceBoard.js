@@ -1,4 +1,5 @@
 const Board = require('./Board')
+const GameData = require('./SequenceGameData')
 
 /**
  * Class for tracking the state of the game board
@@ -11,6 +12,7 @@ class SequenceBoard extends Board {
     this._rows = 7
     this._columns = 6
     this._boardState = {}
+    this._boardLayout = this._populateBoardLayout(GameData.boardLayout)
 
     this.reset()
   }
@@ -163,6 +165,24 @@ class SequenceBoard extends Board {
     } else {
       return boardState.row[row].column[column]
     }
+  }
+
+  /**
+   * Taken from game data
+   * @param {Array} layoutModel
+   * @returns {Object} with row[rowNum].column[columnNum] format
+   */
+  _populateBoardLayout (layoutModel) {
+    const boardLayout = {}
+
+    boardLayout.row = []
+    for (const columnValues of layoutModel) {
+      boardLayout.row.push({
+        column: columnValues
+      })
+    }
+
+    return boardLayout
   }
 }
 

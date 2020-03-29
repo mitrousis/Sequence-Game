@@ -1,4 +1,4 @@
-const Deck = require('../server/Deck')
+const Deck = require('../src/game/Deck')
 
 describe('Deck', () => {
   test('Should be initialized with card values', () => {

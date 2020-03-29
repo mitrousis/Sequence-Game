@@ -1,0 +1,129 @@
+---
+characters:
+  ulysses:
+    name: Ulysses
+    animal: The Unicorn
+    type: any-space
+  dorothy:
+    name: Dorothy
+    animal: The Dragon
+    type: remove-chip
+  camille:
+    name: Camille
+    animal: The Camel
+    type: standard
+  trevor:
+    name: Trevor
+    animal: The Tiger
+    type: standard
+  eddy:
+    name: Eddy
+    animal: The Elephant
+    type: standard
+  zelda:
+    name: Zelda
+    animal: The Zebra
+    type: standard
+  percy:
+    name: Percy
+    animal: The Penguin
+    type: standard
+  monte:
+    name: Monte
+    animal: The Moose
+    type: standard
+  lucas:
+    name: Lucas
+    animal: The Lion
+    type: standard
+  francie:
+    name: Francie
+    animal: The Fox
+    type: standard
+  sherman:
+    name: Sherman
+    animal: The Shark
+    type: standard
+  gerry:
+    name: Gerry
+    animal: The Giraffe
+    type: standard
+  henry:
+    name: Henry
+    animal: The Hippopotamus
+    type: standard
+  willie:
+    name: Willie
+    animal: The Wolf
+    type: standard
+  polly:
+    name: Polly
+    animal: The Panda
+    type: standard
+  katie:
+    name: Katie
+    animal: The Kangaroo
+    type: standard
+  olga:
+    name: Olga
+    animal: The Ostrich
+    type: standard
+  alice:
+    name: Alice
+    animal: The Alligator
+    type: standard
+  wally:
+    name: Wally
+    animal: The Whale
+    type: standard
+  tilly:
+    name: Tilly
+    animal: The Turtle
+    type: standard
+  gloria:
+    name: Gloria
+    animal: The Gorilla
+    type: standard
+boardLayout:
+  - - free-space
+    - trevor
+    - katie
+    - gerry
+    - willie
+    - tilly
+    - free-space
+  - - henry
+    - gloria
+    - zelda
+    - alice
+    - lucas
+    - francie
+    - monte
+  - - polly
+    - sherman
+    - camille
+    - olga
+    - wally
+    - eddy
+    - percy
+  - - monte
+    - alice
+    - gerry
+    - henry
+    - willie
+    - camille
+    - gloria
+  - - percy
+    - zelda
+    - katie
+    - sherman
+    - francie
+    - tilly
+    - polly
+  - - free-space
+    - lucas
+    - eddy
+    - wally
+    - olga
+    - trevor
+    - free-space
