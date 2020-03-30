@@ -1,14 +1,17 @@
-const { v4: uuidv4 } = require('uuid')
+const BaseGameElement = require('./BaseGameElement')
+const Card = require('./Card')
 
 /**
  * Generic card deck controller
  */
-class Deck {
+class Deck extends BaseGameElement {
   /**
    * Can be initialized with card values
    * @param {Array} cardValues
    */
   constructor (cardValues) {
+    super()
+
     this._masterCardDeck = []
     /** @type {Array} */
     this._currentDeck = []
@@ -16,22 +19,23 @@ class Deck {
     this._discards = []
 
     if (cardValues) {
-      cardValues.forEach((cardValue) => {
-        this.addCard(cardValue)
+      cardValues.forEach((cardData) => {
+        this.addCard(this._initializeCard(cardData))
       })
     }
 
     this.reset()
   }
 
-  addCard (cardValue) {
-    // Create unique id for the card
-    this._masterCardDeck.push({
-      id: uuidv4(),
-      ...cardValue
-    })
+  addCard (card) {
+    this._masterCardDeck.push(card)
   }
 
+  /**
+   *
+   * @param {String} cardId
+   * @returns {Card}
+   */
   getCardById (cardId) {
     return this._masterCardDeck.filter((card) => card.id === cardId)
   }
@@ -42,12 +46,7 @@ class Deck {
   reset () {
     this._currentDeck = []
     this._discards = []
-
-    // Might need to break the reference here at some point
     this._currentDeck = this._masterCardDeck.slice()
-    // for (const cardId in this._cardValues) {
-    //   this._currentDeck.push(cardId)
-    // }
   }
 
   shuffle () {
@@ -84,13 +83,26 @@ class Deck {
     return this._currentDeck.splice(0, count)
   }
 
-  discard (cardId) {
-    this._discards.push(cardId)
+  /**
+   *
+   * @param {Card} card
+   */
+  discard (card) {
+    this._discards.push(card)
   }
 
   collectDiscards () {
     this._currentDeck = this._currentDeck.concat(this._discards)
     this._discards = []
+  }
+
+  /**
+   * Populates card data, overwrite as needed to create game specific cards
+   * @param {Object} cardData
+   * @returns {Card}
+   */
+  _initializeCard (cardData) {
+    return new Card(cardData)
   }
 }
 

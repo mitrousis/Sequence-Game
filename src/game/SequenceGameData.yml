@@ -1,86 +1,88 @@
 ---
-characters:
-  ulysses:
+# How many sets of the card data to create
+cardSets: 2
+cardData:
+  - characterId: ulysses
     name: Ulysses
     animal: The Unicorn
     type: any-space
-  dorothy:
+  - characterId: dorothy
     name: Dorothy
     animal: The Dragon
     type: remove-chip
-  camille:
+  - characterId: camille
     name: Camille
     animal: The Camel
     type: standard
-  trevor:
+  - characterId: trevor
     name: Trevor
     animal: The Tiger
     type: standard
-  eddy:
+  - characterId: eddy
     name: Eddy
     animal: The Elephant
     type: standard
-  zelda:
+  - characterId: zelda
     name: Zelda
     animal: The Zebra
     type: standard
-  percy:
+  - characterId: percy
     name: Percy
     animal: The Penguin
     type: standard
-  monte:
+  - characterId: monte
     name: Monte
     animal: The Moose
     type: standard
-  lucas:
+  - characterId: lucas
     name: Lucas
     animal: The Lion
     type: standard
-  francie:
+  - characterId: francie
     name: Francie
     animal: The Fox
     type: standard
-  sherman:
+  - characterId: sherman
     name: Sherman
     animal: The Shark
     type: standard
-  gerry:
+  - characterId: gerry
     name: Gerry
     animal: The Giraffe
     type: standard
-  henry:
+  - characterId: henry
     name: Henry
     animal: The Hippopotamus
     type: standard
-  willie:
+  - characterId: willie
     name: Willie
     animal: The Wolf
     type: standard
-  polly:
+  - characterId: polly
     name: Polly
     animal: The Panda
     type: standard
-  katie:
+  - characterId: katie
     name: Katie
     animal: The Kangaroo
     type: standard
-  olga:
+  - characterId: olga
     name: Olga
     animal: The Ostrich
     type: standard
-  alice:
+  - characterId: alice
     name: Alice
     animal: The Alligator
     type: standard
-  wally:
+  - characterId: wally
     name: Wally
     animal: The Whale
     type: standard
-  tilly:
+  - characterId: tilly
     name: Tilly
     animal: The Turtle
     type: standard
-  gloria:
+  - characterId: gloria
     name: Gloria
     animal: The Gorilla
     type: standard

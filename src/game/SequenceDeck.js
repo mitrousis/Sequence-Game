@@ -1,19 +1,33 @@
 const Deck = require('./Deck')
+const SequenceCard = require('./SequenceCard')
 const GameData = require('./SequenceGameData')
 
 class SequenceDeck extends Deck {
   constructor () {
-    let cards = []
+    const cardValues = []
 
-    // Create cards from characters
-    Object.entries(GameData.characters).forEach(([id, value]) => {
-      cards.push({ id, ...value })
-    })
+    // Create as many sets as needed
+    for (let s = 0; s < GameData.cardSets; s++) {
+      GameData.cardData.forEach((cardData) => {
+        // Deep clone the card data
+        cardData = JSON.parse(JSON.stringify(cardData))
+        cardValues.push(cardData)
+      })
+    }
 
-    // Quick and dirty deep doubling
-    cards = cards.concat(JSON.parse(JSON.stringify(cards)))
+    // // Create cards from characters
+    // GameData.cardData.forEach((cardData) => {
+    //   cards.push(this._initializeCard(cardData))
+    // })
 
-    super(cards)
+    // // Quick and dirty
+    // cards = cards.concat(JSON.parse(JSON.stringify(cards)))
+
+    super(cardValues)
+  }
+
+  _initializeCard (cardData) {
+    return new SequenceCard(cardData)
   }
 }
 

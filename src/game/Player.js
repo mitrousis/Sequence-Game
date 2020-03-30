@@ -1,9 +1,16 @@
-const { v4: uuidv4 } = require('uuid')
+const BaseGameElement = require('./BaseGameElement')
 
-class Player {
-  constructor () {
-    this._id = uuidv4()
+/**
+ * @typedef {import('./Card')} Card
+ */
+
+class Player extends BaseGameElement {
+  constructor (playerData) {
+    super()
+
+    /** @type {Array.<Card>} */
     this._currentHand = []
+    this._playerData = playerData
   }
 
   /**
@@ -14,18 +21,15 @@ class Player {
     this._currentHand = this._currentHand.concat(cards)
   }
 
+  removeCardFromHand (card) {
+    this._currentHand.splice(this._currentHand.indexOf(card), 1)
+  }
+
   /**
    * @returns {Array} cards in hand
    */
   get currentHand () {
     return this._currentHand
-  }
-
-  /**
-   * @returns {String} unique player id
-   */
-  get id () {
-    return this._id
   }
 }
 

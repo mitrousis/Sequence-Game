@@ -1,4 +1,6 @@
 const Board = require('./Board')
+const SequenceCard = require('./SequenceCard')
+
 const GameData = require('./SequenceGameData')
 
 /**
@@ -17,80 +19,104 @@ class SequenceBoard extends Board {
     this.reset()
   }
 
+  static get VALUE_FREE_SPACE () {
+    return 'free-space'
+  }
+
+  static get VALUE_EMPTY () {
+    return 'empty'
+  }
+
   reset () {
     const emptyBoard = {
-      row: Array(this._rows).fill('empty')
+      row: Array(this._rows).fill(SequenceBoard.VALUE_EMPTY)
     }
 
     for (const r in emptyBoard.row) {
-      emptyBoard.row[r] = { column: Array(this._columns).fill('empty') }
+      emptyBoard.row[r] = { column: Array(this._columns).fill(SequenceBoard.VALUE_EMPTY) }
     }
 
     this._boardState = emptyBoard
   }
 
-  playBoardSpace (row, column, playerId) {
+  /**
+   * Main card playing logic
+   * @param {SequencePlayer} player
+   * @param {SequenceCard} card
+   * @param {Number} row
+   * @param {Number} column
+   */
+  playCard (player, card, row, column) {
     const spaceValue = this._getBoardSpace(this._boardState, row, column)
-    switch (spaceValue) {
-      case 'free-space':
-        throw Error('Cannot play on free space')
+    const spaceCharacterId = this._getBoardLayoutSpace(this._boardLayout, row, column)
 
-      case playerId:
+    // Validation
+    switch (spaceValue) {
+      case player:
         throw Error('Cannot play own space')
 
+      case SequenceBoard.VALUE_FREE_SPACE:
+        throw Error('Cannot play on free space')
+
       case undefined:
         throw Error('Invalid space')
+    }
 
-      case 'empty':
-        this._boardState.row[row].column[column] = playerId
+    // Card type
+    switch (card.type) {
+      case SequenceCard.TYPE_REMOVE_CHIP:
+        if (spaceValue === SequenceBoard.VALUE_EMPTY) {
+          throw Error('Cannot remove empty space')
+        }
+
+        // Empty out the space
+        this._setBoardSpace(this._boardState, row, column, SequenceBoard.VALUE_EMPTY)
         break
 
-      // Space is otherwise occupied
-      default:
-        throw Error('Space is already occupied')
-    }
-  }
+      case SequenceCard.TYPE_ANY_SPACE:
+        this._setBoardSpace(this._boardState, row, column, player)
+        break
 
-  removeBoardSpace (row, column, playerId) {
-    const spaceValue = this._getBoardSpace(this._boardState, row, column)
-    switch (spaceValue) {
-      case 'free-space':
-        throw Error('Cannot remove player from free space')
+      // Set the player to the space, validate
+      case SequenceCard.TYPE_STANDARD:
+        if (card.characterId !== spaceCharacterId) {
+          throw Error(`Cannot play ${card.characterId} on space with ${spaceCharacterId}`)
+        }
 
-      case playerId:
-        throw Error('Cannot remove own player space')
-
-      case undefined:
-        throw Error('Invalid space')
-
-      case 'empty':
-        throw Error('Space is empty')
-
-      // Otherwise, remove the player id in the space
-      default:
-        this._boardState.row[row].column[column] = null
+        this._setBoardSpace(this._boardState, row, column, player)
         break
     }
   }
 
   /**
    * Checks board for any players that have won
+   * @param {SequencePlayer} player
+   * @param {Number} winningSequentialMatches how many to win
+   * @param {Array.<SequencePlayer>} allPlayers players to check for
+   * @returns {Boolean}
+   */
+  isWinningPlayer (player, winningSequentialMatches, allPlayers) {
+    return player === this._checkForWinningPlayer(this._boardState, winningSequentialMatches, allPlayers)
+  }
+
+  /**
+   * Private method for searching for winning player
    * @param {Object} boardState
    * @param {Number} winningSequentialMatches how many to win
-   * @param {Array.<String>} playerIds player ids to check for
-   * @returns {String|null} winning player id
+   * @param {Array.<SequencePlayer>} players players to check for
+   * @returns {SequencePlayer|null} winning player
    */
-  _checkForWinningPlayer (boardState, winningSequentialMatches, playerIds = []) {
+  _checkForWinningPlayer (boardState, winningSequentialMatches, players) {
     const lastRow = boardState.row.length - 1
     const lastColumn = boardState.row[lastRow].column.length - 1
 
     for (let row = 0; row <= lastRow; row++) {
       for (let column = 0; column <= lastColumn; column++) {
         // Check all players, first one that it finds with matching sequence wins
-        for (const playerId of playerIds) {
-          const sequentialMatches = this._checkBoardSpace(boardState, row, column, playerId)
+        for (const player of players) {
+          const sequentialMatches = this._checkBoardSpace(boardState, row, column, player)
           if (sequentialMatches === winningSequentialMatches) {
-            return playerId
+            return player
           }
         }
       }
@@ -109,14 +135,14 @@ class SequenceBoard extends Board {
    * @param {Object} boardState
    * @param {Number} homeRow
    * @param {Number} homeColumn
-   * @param {String} playerId
+   * @param {SequencePlayer} player
    * @param {String} direction
    * @param {Number} iteration
    * @returns {Number} number of sequential matching spaces
    */
-  _checkBoardSpace (boardState, homeRow, homeColumn, playerId, direction = null, iteration = 0) {
+  _checkBoardSpace (boardState, homeRow, homeColumn, player, direction = null, iteration = 0) {
     const spaceValue = this._getBoardSpace(boardState, homeRow, homeColumn)
-    if (!(spaceValue === 'free-space' || spaceValue === playerId)) {
+    if (!(spaceValue === SequenceBoard.VALUE_FREE_SPACE || spaceValue === player)) {
       return iteration
     }
 
@@ -134,7 +160,7 @@ class SequenceBoard extends Board {
           const checkColumn = homeColumn + columnOffset
 
           const checkDirection = direction || `${rowOffset},${columnOffset}`
-          const sequentialIterations = this._checkBoardSpace(boardState, checkRow, checkColumn, playerId, checkDirection, iteration + 1)
+          const sequentialIterations = this._checkBoardSpace(boardState, checkRow, checkColumn, player, checkDirection, iteration + 1)
           if (iteration !== 0) return sequentialIterations
 
           maxSequentialIterations = Math.max(maxSequentialIterations, sequentialIterations)
@@ -151,7 +177,7 @@ class SequenceBoard extends Board {
    * @param {objet} boardState
    * @param {Number} row
    * @param {Number} column
-   * @returns {String} undefined | 'free-space' | 'empty' | playerId |
+   * @returns {SequencePlayer|String} undefined | 'free-space' | 'empty' | SequencePlayer in location
    */
   _getBoardSpace (boardState, row, column) {
     const lastRow = boardState.row.length - 1
@@ -161,10 +187,21 @@ class SequenceBoard extends Board {
     if (boardState.row[row] === undefined || boardState.row[row].column[column] === undefined) {
       return undefined
     } else if ((column === 0 || column === lastColumn) && (row === 0 || row === lastRow)) {
-      return 'free-space'
+      return SequenceBoard.VALUE_FREE_SPACE
     } else {
       return boardState.row[row].column[column]
     }
+  }
+
+  /**
+   *
+   * @param {Object} boardState
+   * @param {Number} row
+   * @param {Number} column
+   * @param {*} value
+   */
+  _setBoardSpace (boardState, row, column, value) {
+    boardState.row[row].column[column] = value
   }
 
   /**
@@ -183,6 +220,17 @@ class SequenceBoard extends Board {
     }
 
     return boardLayout
+  }
+
+  /**
+   * Returns the value at a board space
+   * @param {Object} boardLayout
+   * @param {Number} row
+   * @param {Number} column
+   * @returns {String} characterId or 'free-space'
+   */
+  _getBoardLayoutSpace (boardLayout, row, column) {
+    return boardLayout.row[row].column[column]
   }
 }
 

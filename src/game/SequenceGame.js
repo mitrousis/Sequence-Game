@@ -3,10 +3,6 @@ const SequenceDeck = require('./SequenceDeck')
 const SequenceBoard = require('./SequenceBoard')
 const SequencePlayer = require('./SequencePlayer')
 
-/**
- * @typedef {import('./Player')} Player
- */
-
 class SequenceGame extends Game {
   constructor () {
     super()
@@ -32,7 +28,8 @@ class SequenceGame extends Game {
     this._deck.reset()
     this._deck.shuffle()
 
-    // Deal to all players
+    // Deal to all players, just doing 3 for each
+    // not going around
     this._players.forEach((player) => {
       player.addCardsToHand(this._deck.deal(this._startingCardCount))
     })
@@ -42,24 +39,39 @@ class SequenceGame extends Game {
 
   /**
    *
+   * @param {SequencePlayer} player
+   * @param {SequenceCard} card
    * @param {Number} row
    * @param {Number} column
-   * @param {Player} player
-   * @param {Object} card
    */
-  playSpace (row, column, player, card) {
+  playCard (player, card, row, column) {
     if (this.currentPlayer !== player) {
       throw Error('Invalid player for turn')
     }
 
-    // Dragon = remove chip
-    // Unicorn = any space
+    // Will throw errors for invalid plays
+    this._board.playCard(player, card, row, column)
 
-    this._board.playSpace(row, column, player, card)
+    // Check winner
+    if (this._board.isWinningPlayer(player, this._winningSequentialMatches, this._players)) {
+      this._playerWinsRound(player)
+    } else {
+      // Discard the played card
+      player.removeCardFromHand(card)
+
+      // Return to deck
+      this._deck.discard(card)
+
+      // Deal one more
+      player.addCardsToHand(this._deck.deal(1))
+
+      // Advance player
+      this._nextPlayer()
+    }
   }
 
-  addPlayer () {
-    return super.addPlayer(SequencePlayer)
+  _initializePlayer (playerData = {}) {
+    return new SequencePlayer(playerData)
   }
 }
 
